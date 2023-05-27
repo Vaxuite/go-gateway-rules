@@ -1,19 +1,28 @@
 [Please]
-Version = 16.27.1
+Version = 17.0.0-beta.10
 
 [Plugin "go"]
 Target = //plugins:go
 ImportPath = github.com/please-build/go-proto-rules
 GoTool = //third_party/go:toolchain|go
+FeatureFlags = go_get
 
 [Plugin "proto"]
 Target = //plugins:proto
 ProtocTool = //third_party/proto:protoc
-LanguageDef = //build_defs:go_proto
+LanguageDef = //build_defs:go_gateway
 
 [Plugin "go_proto"]
-GrpcPlugin = //third_party/go:protoc-gen-go-grpc
-ProtoPlugin = //third_party/go:protoc-gen-go
+Target = //plugins:go-proto
+grpcPlugin = ///third_party/go/google.golang.org_grpc_cmd_protoc-gen-go-grpc//:protoc-gen-go-grpc
+protoplugin = ///third_party/go/google.golang.org_protobuf//cmd/protoc-gen-go
+
+[Plugin "go_gateway"]
+GrpcPlugin = //third_party/go/google.golang.org_grpc//cmd/protoc-gen-go-grpc
+ProtoPlugin = ///third_party/go/google.golang.org_protobuf//cmd/protoc-gen-go
+GatewayPlugin = ///third_party/go/github.com_grpc-ecosystem_grpc-gateway_v2//protoc-gen-grpc-gateway:protoc-gen-grpc-gateway
+GatewayDep = ///third_party/go/github.com_grpc-ecosystem_grpc-gateway_v2//protoc-gen-grpc-gateway:protoc-gen-grpc-gateway
+ProtoDep = ///third_party/go/google.golang.org_protobuf:installs
 
 [PluginDefinition]
 Name = go_gateway
@@ -26,6 +35,10 @@ DefaultValue = grpc_go_plugin
 ConfigKey = GrpcPlugin
 DefaultValue = grpc_go_plugin
 
+[PluginConfig "gateway_plugin"]
+ConfigKey = GatewayPlugin
+DefaultValue = gateway_go_plugin
+
 [PluginConfig "proto_dep"]
 ConfigKey = ProtoDep
 DefaultValue = //third_party/go:protobuf
@@ -33,6 +46,10 @@ DefaultValue = //third_party/go:protobuf
 [PluginConfig "grpc_dep"]
 ConfigKey = GrpcDep
 DefaultValue = //third_party/go:grpc
+
+[PluginConfig "gateway_dep"]
+ConfigKey = GatewayDep
+DefaultValue = //third_party/go:grpc_gateway
 
 [FeatureFlags]
 ExcludeProtoRules = True
